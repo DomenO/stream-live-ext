@@ -7,8 +7,7 @@ interface NavButton {
 
 const navigationButtons: NavButton[] = [
     {selector: '.button__live', action: 'requestStreams'},
-    {selector: '.button__offline', action: 'requestChannels'},
-    {selector: '.button__setting', action: ''}
+    {selector: '.button__offline', action: 'requestChannels'}
 ];
 
 chrome.runtime.onMessage.addListener(
@@ -27,11 +26,22 @@ chrome.runtime.onMessage.addListener(
 $(window).on('load', () => {
     navigationButtons.forEach(button => addEventButton(button));
     $(navigationButtons[0].selector).click();
+    $('.button__setting').on('click', () => {
+        $('.list').empty();
+        $('.settings').show();
+    });
+    $('.settings__form').submit(() => {
+        chrome.runtime.sendMessage({
+            message: 'accountImport',
+            data: $('.settings__form .form__input').val()
+        });
+    })
 });
 
 function addEventButton(button: NavButton) {
     $(button.selector).on('click', () => {
         $('.list').empty();
+        $('.settings').hide();
         $('.loading').show();
 
         navigationButtons.forEach(btn =>

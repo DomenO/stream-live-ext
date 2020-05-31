@@ -15,9 +15,17 @@ chrome.runtime.onMessage.addListener(
             case 'requestChannels':
                 requestChannels();
                 break;
+            case 'accountImport':
+                accountImport(request.data);
+                break;
         }
     }
 );
+
+async function accountImport(name: string) {
+    twitch.logout();
+    twitch.login(name);
+}
 
 async function requestChannels() {
     if (await twitch.checkLogin()) {

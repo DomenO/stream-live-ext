@@ -44,6 +44,8 @@ export class Twitch {
     async logout() {
         this.userId = undefined;
         localStorage.removeItem(this.localStoreKeys.userId);
+        this.cacheTimeout = {};
+        this.lastRequest = {};
     }
 
     async checkLogin(): Promise<boolean> {

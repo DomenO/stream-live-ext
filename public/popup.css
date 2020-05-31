@@ -13,6 +13,17 @@ body {
     height: 200px;
 }
 
+.settings {
+    display: none;
+}
+
+.settings__form {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 200px;
+}
+
 .navigation {
     position: sticky;
     top: 0;
