@@ -13,6 +13,13 @@ body {
     height: 200px;
 }
 
+.navigation {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    background-color: #FFF;
+}
+
 .list .stream-item:not(:first-of-type) {
     margin-top: 5px;
 }

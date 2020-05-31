@@ -1,23 +1,49 @@
 import {Channel} from '../models/сhannel';
 
+interface NavButton {
+    selector: string;
+    action: string;
+}
+
+const navigationButtons: NavButton[] = [
+    {selector: '.button__live', action: 'requestStreams'},
+    {selector: '.button__offline', action: 'requestChannels'},
+    {selector: '.button__setting', action: ''}
+];
 
 chrome.runtime.onMessage.addListener(
     function(request) {
         switch (request.message) {
-            case 'outputStreams':
-                outputChannels(request.data);
+            case 'listChannels':
+                listChannels(request.data);
+                break;
+            case 'listStreams':
+                listStreams(request.data);
                 break;
         }
     }
 );
 
 $(window).on('load', () => {
-    chrome.runtime.sendMessage({message: 'requestStreams'});
+    navigationButtons.forEach(button => addEventButton(button));
+    $(navigationButtons[0].selector).click();
 });
 
-function outputChannels(channels: Channel[]) {
-    $('.loading').hide();
-    $('.list').empty();
+function addEventButton(button: NavButton) {
+    $(button.selector).on('click', () => {
+        $('.list').empty();
+        $('.loading').show();
+
+        navigationButtons.forEach(btn =>
+            $(btn.selector).prop('disabled', btn.selector === button.selector)
+        );
+    
+        chrome.runtime.sendMessage({message: button.action});
+    });
+}
+
+function listStreams(channels: Channel[]) {
+    $('.loading').hide();    
 
     channels.forEach(item => {
         $('.list').append(`
@@ -32,5 +58,20 @@ function outputChannels(channels: Channel[]) {
             </section>
         </a>
         `);
-    });
+    });   
+}
+
+function listChannels(channels: Channel[]) {
+    $('.loading').hide();    
+
+    channels.forEach(item => {
+        $('.list').append(`
+        <a class="stream-item" href="${item.link}" target="_blank">
+            <img class="stream-item__logo" src="${item.logo}" alt="Logo" />
+            <section class="stream-item__content">
+                <span class="stream-item__title">${item.name}</span>
+            </section>
+        </a>
+        `);
+    });   
 }

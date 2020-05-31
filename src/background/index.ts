@@ -12,17 +12,30 @@ chrome.runtime.onMessage.addListener(
             case 'requestStreams':
                 requestStreams();
                 break;
+            case 'requestChannels':
+                requestChannels();
+                break;
         }
     }
 );
 
+async function requestChannels() {
+    if (await twitch.checkLogin()) {
+        chrome.runtime.sendMessage({
+            message : 'listChannels',
+            data: await twitch.getChannels()
+        });
+    } else if(await twitch.login('Replu')) {
+        await requestChannels();
+        await refreshBadge();
+    }
+}
+
 async function requestStreams() {
     if (await twitch.checkLogin()) {
-        const streams = await twitch.getStreams();
-
         chrome.runtime.sendMessage({
-            message : 'outputStreams',
-            data: streams
+            message : 'listStreams',
+            data: await twitch.getStreams()
         });
     } else if(await twitch.login('Replu')) {
         await requestStreams();

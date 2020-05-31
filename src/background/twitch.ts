@@ -58,7 +58,7 @@ export class Twitch {
                 return JSON.parse(localStorage.getItem(this.localStoreKeys.streams));
             }
 
-            const channals = await this.getChannals();
+            const channals = await this.getChannels();
 
             const response = await fetch(`https://api.twitch.tv/kraken/streams/?channel=${channals.map(i => i.id).join(',')}&limit=100`, {
                 headers: this.headers
@@ -87,7 +87,7 @@ export class Twitch {
         }
     }
 
-    async getChannals(cache: boolean = true): Promise<Channel[]> {
+    async getChannels(cache: boolean = true): Promise<Channel[]> {
         try {
             const lastRequest = this.lastRequest[this.localStoreKeys.channels];
 
