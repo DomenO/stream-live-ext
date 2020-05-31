@@ -65,8 +65,6 @@ export class Twitch {
             });
             const json = await response.json();
 
-            console.log(json);
-
             const streams: Channel[] = json.streams.map(item => ({
                 id: String(item.channel._id),
                 status: Status.live,

@@ -16,6 +16,7 @@ $(window).on('load', () => {
 });
 
 function outputChannels(channels: Channel[]) {
+    $('.loading').hide();
     $('.list').empty();
 
     channels.forEach(item => {

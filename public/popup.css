@@ -2,10 +2,19 @@ body {
     width: 400px;
     font-family: arial, sans-serif;
     font-size: 16px;
+    padding: 0;
+    margin: 0;
+}
+
+.loading {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 200px;
 }
 
 .list .stream-item:not(:first-of-type) {
-    margin-top: 10px;
+    margin-top: 5px;
 }
 
 .stream-item__logo {
@@ -42,6 +51,11 @@ body {
     text-decoration: none;
     color: #000;
     font-weight: bold;
+    padding: 5px;
+}
+
+.stream-item:hover {
+    background-color: #F7F7F8;
 }
 
 .stream-item__title {
