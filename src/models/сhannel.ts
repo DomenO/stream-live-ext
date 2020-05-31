@@ -1,12 +1,14 @@
 export enum Status {
-    live, offline
+    live = 'live',
+    offline = 'offline'
 }
 
 export enum Service {
-    twitch
+    twitch = 'twitch'
 }
 
-export interface Stream {
+export interface Channel {
+    id: string;
     status: Status;
     service: Service;
     name: string;
@@ -14,4 +16,5 @@ export interface Stream {
     link: string;
     notification: boolean;
     viewers: number;
+    title: string;
 }

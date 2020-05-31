@@ -6,7 +6,8 @@ declare const chrome: {
                 fn: (message: Message) => void 
             ) => void;
         }
-    }
+    },
+    browserAction: any;
 };
 
 interface Message {
