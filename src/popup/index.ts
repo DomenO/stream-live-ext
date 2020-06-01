@@ -105,7 +105,9 @@ function listChannels(channels: Channel[]) {
         });
 
     } else if (currentTab === Tab.live) {
-        filterChannels = channels.filter(channel => channel.status === Status.live);
+        filterChannels = channels
+            .filter(channel => channel.status === Status.live)
+            .sort((a, b) => b.viewers - a.viewers);
 
         filterChannels.forEach(item => {
             $('.list').append(`
