@@ -1,19 +1,16 @@
 import {Twitch} from './twitch';
 
-
 const twitch = new Twitch();
+
+let timeout: number;
 
 refreshBadge();
 
 chrome.runtime.onMessage.addListener(
     function(request) {
         switch (request.message) {
-            case 'requestStreams':
-                requestList('Streams');
-                break;
-
             case 'requestChannels':
-                requestList('Channels');
+                requestChannels();
                 break;
 
             case 'accountImport':
@@ -36,22 +33,14 @@ async function accountImport(name: string) {
         });
 }
 
-async function requestList(type: 'Streams' | 'Channels') {
-    if (await twitch.checkLogin()) {
-        
-        if (type === 'Streams')
-            chrome.runtime.sendMessage({
-                message: 'listStreams',
-                data: await twitch.getStreams()
-            });
+async function requestChannels() {
+    if (await twitch.checkLogin())
+        chrome.runtime.sendMessage({
+            message: 'listChannels',
+            data: await twitch.getChannels()
+        });
 
-        else if (type === 'Channels')
-            chrome.runtime.sendMessage({
-                message: 'listChannels',
-                data: await twitch.getChannels()
-            });
-
-    } else 
+    else 
         chrome.runtime.sendMessage({
             message: 'login'
         });
@@ -62,10 +51,9 @@ async function refreshBadge() {
     
     const count = await twitch.getCountStreams();
 
-    if (count > 0) {
-        chrome.browserAction.setBadgeBackgroundColor({color: '#2D2D2D'});
-        chrome.browserAction.setBadgeText({text: String(count)});
-    }
+    chrome.browserAction.setBadgeBackgroundColor({color: '#2D2D2D'});
+    chrome.browserAction.setBadgeText({text: count ? String(count) : ''});
 
-    setTimeout(() => refreshBadge(), 5 * 60 * 1000);
+    clearTimeout(timeout);
+    timeout = setTimeout(() => refreshBadge(), 5 * 60 * 1000);
 }

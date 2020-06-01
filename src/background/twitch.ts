@@ -9,8 +9,8 @@ export class Twitch {
 
     private readonly localStoreKeys = {
         userId: Service.twitch + '_user_id',
-        streams: Service.twitch + '_streams',
-        channels: Service.twitch + '_channels',
+        streams: Service.twitch + '_live_channels',
+        channels: Service.twitch + '_all_channels',
     }
 
     private lastRequest: {[K: string]: number} = {};
@@ -50,44 +50,30 @@ export class Twitch {
         return Promise.resolve(!!this.userId);
     }
 
-    async getStreams(cache: boolean = true): Promise<Channel[]> {
+    async getCountStreams(): Promise<number> {
         try {
-            const lastRequest = this.lastRequest[this.localStoreKeys.streams];
+            return (await this.getLiveChannels()).length;
+        } catch (err) {
+            console.error(err);
+            return 0;
+        }
+    }
 
-            if (cache && lastRequest && lastRequest > Date.now() - this.cacheTimeout[this.localStoreKeys.streams] * 1000) {
-                return JSON.parse(localStorage.getItem(this.localStoreKeys.streams));
-            }
+    async getChannels(): Promise<Channel[]> {
+        try {
+            const allChannels = await this.getAllChannels();
+            const liveChannels = await this.getLiveChannels();
 
-            const channals = await this.getChannels();
-
-            const response = await fetch(`https://api.twitch.tv/kraken/streams/?channel=${channals.map(i => i.id).join(',')}&limit=100`, {
-                headers: this.headers
-            });
-            const json = await response.json();
-
-            const streams: Channel[] = json.streams.map(item => ({
-                id: String(item.channel._id),
-                status: Status.live,
-                service: Service.twitch,
-                name: item.channel.display_name,
-                logo: item.channel.logo,
-                viewers: item.viewers,
-                link: item.channel.url,
-                notification: false,
-                title: item.channel.status
-            }));
-
-            localStorage.setItem(this.localStoreKeys.streams, JSON.stringify(streams));
-            this.lastRequest[this.localStoreKeys.streams] = Date.now();
-
-            return streams;
+            return allChannels.map(channel => 
+                liveChannels.find(ch => ch.id === channel.id) || channel
+            );
         } catch (err) {
             console.error(err);
             return [];
         }
     }
 
-    async getChannels(cache: boolean = true): Promise<Channel[]> {
+    private async getAllChannels(cache: boolean = true): Promise<Channel[]> {
         try {
             const lastRequest = this.lastRequest[this.localStoreKeys.channels];
 
@@ -122,12 +108,40 @@ export class Twitch {
         }
     }
 
-    async getCountStreams(): Promise<number> {
+    private async getLiveChannels(cache: boolean = true): Promise<Channel[]> {
         try {
-            return (await this.getStreams()).length;
+            const lastRequest = this.lastRequest[this.localStoreKeys.streams];
+
+            if (cache && lastRequest && lastRequest > Date.now() - this.cacheTimeout[this.localStoreKeys.streams] * 1000) {
+                return JSON.parse(localStorage.getItem(this.localStoreKeys.streams));
+            }
+
+            const channals = await this.getAllChannels();
+
+            const response = await fetch(`https://api.twitch.tv/kraken/streams/?channel=${channals.map(i => i.id).join(',')}&limit=100`, {
+                headers: this.headers
+            });
+            const json = await response.json();
+
+            const streams: Channel[] = json.streams.map(item => ({
+                id: String(item.channel._id),
+                status: Status.live,
+                service: Service.twitch,
+                name: item.channel.display_name,
+                logo: item.channel.logo,
+                viewers: item.viewers,
+                link: item.channel.url,
+                notification: false,
+                title: item.channel.status
+            }));
+
+            localStorage.setItem(this.localStoreKeys.streams, JSON.stringify(streams));
+            this.lastRequest[this.localStoreKeys.streams] = Date.now();
+
+            return streams;
         } catch (err) {
             console.error(err);
-            return 0;
+            return [];
         }
     }
 }
