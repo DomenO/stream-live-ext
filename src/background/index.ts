@@ -34,13 +34,14 @@ async function accountImport(name: string) {
 }
 
 async function requestChannels() {
-    if (await twitch.checkLogin())
+    if (await twitch.checkLogin()) {
         chrome.runtime.sendMessage({
             message: 'listChannels',
             data: await twitch.getChannels()
         });
+        await refreshBadge();
 
-    else 
+    } else 
         chrome.runtime.sendMessage({
             message: 'login'
         });
