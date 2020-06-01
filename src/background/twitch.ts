@@ -31,21 +31,19 @@ export class Twitch {
             });
             const json = await response.json();
 
+            if (json.users.length !== 1)
+                return false;
+
             this.userId = json.users[0]._id;
+            this.lastRequest = {};
             
             localStorage.setItem(this.localStoreKeys.userId, this.userId);
+            
             return true;
         } catch (err) {
             console.error(err);
             return false;
         }
-    }
-
-    async logout() {
-        this.userId = undefined;
-        localStorage.removeItem(this.localStoreKeys.userId);
-        this.cacheTimeout = {};
-        this.lastRequest = {};
     }
 
     async checkLogin(): Promise<boolean> {

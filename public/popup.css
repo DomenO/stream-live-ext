@@ -24,6 +24,11 @@ body {
     height: 200px;
 }
 
+.form__error {
+    color: red;
+    display: none;
+}
+
 .navigation {
     position: sticky;
     top: 0;
@@ -40,6 +45,13 @@ body {
     height: 48px;
     min-width: 48px;
     max-width: 48px;
+}
+
+.stream-item__empty {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 200px;
 }
 
 .stream-item__content {

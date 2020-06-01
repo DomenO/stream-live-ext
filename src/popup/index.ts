@@ -2,12 +2,13 @@ import {Channel} from '../models/сhannel';
 
 interface NavButton {
     selector: string;
-    action: string;
+    action?: string;
 }
 
 const navigationButtons: NavButton[] = [
     {selector: '.button__live', action: 'requestStreams'},
-    {selector: '.button__offline', action: 'requestChannels'}
+    {selector: '.button__offline', action: 'requestChannels'},
+    {selector: '.button__setting'}
 ];
 
 chrome.runtime.onMessage.addListener(
@@ -16,8 +17,22 @@ chrome.runtime.onMessage.addListener(
             case 'listChannels':
                 listChannels(request.data);
                 break;
+
             case 'listStreams':
                 listStreams(request.data);
+                break;
+
+            case 'login':
+                $(navigationButtons[2].selector).click();
+                break;
+
+            case 'loginSuccessful':
+                $(navigationButtons[0].selector).click();
+                break;
+
+            case 'accountNotFound':
+                $(navigationButtons[2].selector).click();
+                $('.form__error').show();
                 break;
         }
     }
@@ -26,15 +41,26 @@ chrome.runtime.onMessage.addListener(
 $(window).on('load', () => {
     navigationButtons.forEach(button => addEventButton(button));
     $(navigationButtons[0].selector).click();
-    $('.button__setting').on('click', () => {
-        $('.list').empty();
+
+    $(navigationButtons[2].selector).on('click', () => {
         $('.settings').show();
+        $('.loading').hide();
+        $('.form__error').hide();
     });
-    $('.settings__form').submit(() => {
+
+    $('.settings__form').submit(e => {
+        $('.loading').show();
+        $('.settings').hide();
+
         chrome.runtime.sendMessage({
             message: 'accountImport',
             data: $('.settings__form .form__input').val()
         });
+
+        $('.settings__form .form__input').val('');
+        $('.form__error').hide();
+
+        e.preventDefault();
     })
 });
 
@@ -48,7 +74,9 @@ function addEventButton(button: NavButton) {
             $(btn.selector).prop('disabled', btn.selector === button.selector)
         );
     
-        chrome.runtime.sendMessage({message: button.action});
+        if (button.action) {
+            chrome.runtime.sendMessage({message: button.action});
+        }
     });
 }
 
@@ -68,11 +96,14 @@ function listStreams(channels: Channel[]) {
             </section>
         </a>
         `);
-    });   
+    });
+
+    if (channels.length === 0)
+        $('.list').append(`<section class="stream-item__empty">Empty</section>`);
 }
 
 function listChannels(channels: Channel[]) {
-    $('.loading').hide();    
+    $('.loading').hide();
 
     channels.forEach(item => {
         $('.list').append(`
@@ -83,5 +114,8 @@ function listChannels(channels: Channel[]) {
             </section>
         </a>
         `);
-    });   
+    });
+
+    if (channels.length === 0)
+        $('.list').append(`<section class="stream-item__empty">Empty</section>`);
 }

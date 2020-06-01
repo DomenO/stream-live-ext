@@ -1,4 +1,3 @@
-import {Channel, Status, Service} from '../models/сhannel';
 import {Twitch} from './twitch';
 
 
@@ -10,11 +9,13 @@ chrome.runtime.onMessage.addListener(
     function(request) {
         switch (request.message) {
             case 'requestStreams':
-                requestStreams();
+                requestList('Streams');
                 break;
+
             case 'requestChannels':
-                requestChannels();
+                requestList('Channels');
                 break;
+
             case 'accountImport':
                 accountImport(request.data);
                 break;
@@ -22,35 +23,39 @@ chrome.runtime.onMessage.addListener(
     }
 );
 
-async function accountImport(name: string) {
-    twitch.logout();
-    twitch.login(name);
-}
-
-async function requestChannels() {
-    if (await twitch.checkLogin()) {
-        chrome.runtime.sendMessage({
-            message : 'listChannels',
-            data: await twitch.getChannels()
-        });
-    } else if(await twitch.login('Replu')) {
-        await requestChannels();
+async function accountImport(name: string) {    
+    if (await twitch.login(name)) {
         await refreshBadge();
-    }
-}
-
-async function requestStreams() {
-    if (await twitch.checkLogin()) {
         chrome.runtime.sendMessage({
-            message : 'listStreams',
-            data: await twitch.getStreams()
+            message: 'loginSuccessful'
         });
-    } else if(await twitch.login('Replu')) {
-        await requestStreams();
-        await refreshBadge();
-    }
+
+    } else
+        chrome.runtime.sendMessage({
+            message: 'accountNotFound'
+        });
 }
 
+async function requestList(type: 'Streams' | 'Channels') {
+    if (await twitch.checkLogin()) {
+        
+        if (type === 'Streams')
+            chrome.runtime.sendMessage({
+                message: 'listStreams',
+                data: await twitch.getStreams()
+            });
+
+        else if (type === 'Channels')
+            chrome.runtime.sendMessage({
+                message: 'listChannels',
+                data: await twitch.getChannels()
+            });
+
+    } else 
+        chrome.runtime.sendMessage({
+            message: 'login'
+        });
+}
 
 async function refreshBadge() {
     if(!await twitch.checkLogin()) return;
@@ -58,7 +63,7 @@ async function refreshBadge() {
     const count = await twitch.getCountStreams();
 
     if (count > 0) {
-        chrome.browserAction.setBadgeBackgroundColor({color: '#2d2d2d'});
+        chrome.browserAction.setBadgeBackgroundColor({color: '#2D2D2D'});
         chrome.browserAction.setBadgeText({text: String(count)});
     }
 
