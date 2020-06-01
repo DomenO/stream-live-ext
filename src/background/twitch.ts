@@ -104,6 +104,8 @@ export class Twitch {
             ];
 
             offset = channels.length;
+
+            if (channels.length === 0) return [];
         }
 
         return channels;
@@ -160,6 +162,8 @@ export class Twitch {
             ];
 
             offset = channels.length;
+
+            if (channels.length === 0) return [];
         }
 
         return channels;
