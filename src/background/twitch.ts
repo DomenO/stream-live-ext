@@ -73,6 +73,42 @@ export class Twitch {
         }
     }
 
+    private async requestAllChannels(): Promise<Channel[]> {
+        const limit = 100;
+        let offset = 0;
+        let channels: Channel[] = [];
+
+        while (offset % limit === 0) {
+            const response = await fetch(
+                `https://api.twitch.tv/kraken/users/${this.userId}/follows/channels` +
+                `?sortby=login` +
+                `&offset=${offset}` +
+                `&limit=${limit}`, 
+            {headers: this.headers});
+            const json = await response.json();
+
+            channels = 
+            [
+                ...channels,
+                ...json.follows.map(item => ({
+                    id: String(item.channel._id),
+                    status: Status.offline,
+                    service: Service.twitch,
+                    name: item.channel.display_name,
+                    logo: item.channel.logo,
+                    link: item.channel.url,
+                    title: item.channel.status,
+                    notification: false,
+                    viewers: 0,
+                }))
+            ];
+
+            offset = channels.length;
+        }
+
+        return channels;
+    }
+
     private async getAllChannels(cache: boolean = true): Promise<Channel[]> {
         try {
             const lastRequest = this.lastRequest[this.localStoreKeys.channels];
@@ -81,32 +117,54 @@ export class Twitch {
                 return JSON.parse(localStorage.getItem(this.localStoreKeys.channels));
             }
 
-            const response = await fetch(`https://api.twitch.tv/kraken/users/${this.userId}/follows/channels?sortby=login&limit=100`, {
-                headers: this.headers
-            });
-            const json = await response.json();
+            const channels: Channel[] = await this.requestAllChannels();
 
-            const channals: Channel[] = json.follows.map(item => ({
-                id: String(item.channel._id),
-                status: Status.offline,
-                service: Service.twitch,
-                name: item.channel.display_name,
-                logo: item.channel.logo,
-                link: item.channel.url,
-                title: item.channel.status,
-                notification: false,
-                viewers: 0,
-            }));
-
-            localStorage.setItem(this.localStoreKeys.channels, JSON.stringify(channals));
+            localStorage.setItem(this.localStoreKeys.channels, JSON.stringify(channels));
             this.lastRequest[this.localStoreKeys.channels] = Date.now();
 
-            return channals;
+            return channels;
         } catch (err) {
             console.error(err);
             return [];
         }
     }
+
+    private async requestLiveChannels(allChannals: Channel[]): Promise<Channel[]> {
+        const limit = 100;
+        let offset = 0;
+        let channels: Channel[] = [];
+
+        while (offset % limit === 0) {
+            const response = await fetch(
+                `https://api.twitch.tv/kraken/streams/` +
+                `?channel=${allChannals.map(i => i.id).join(',')}` +
+                `&offset=${offset}` +
+                `&limit=${limit}`, 
+            {headers: this.headers});
+            const json = await response.json();
+
+            channels = 
+            [
+                ...channels,
+                ...json.streams.map(item => ({
+                    id: String(item.channel._id),
+                    status: Status.live,
+                    service: Service.twitch,
+                    name: item.channel.display_name,
+                    logo: item.channel.logo,
+                    viewers: item.viewers,
+                    link: item.channel.url,
+                    notification: false,
+                    title: item.channel.status
+                }))
+            ];
+
+            offset = channels.length;
+        }
+
+        return channels;
+    }
+
 
     private async getLiveChannels(cache: boolean = true): Promise<Channel[]> {
         try {
@@ -116,29 +174,13 @@ export class Twitch {
                 return JSON.parse(localStorage.getItem(this.localStoreKeys.streams));
             }
 
-            const channals = await this.getAllChannels();
+            const allChannals = await this.getAllChannels();
+            const channels: Channel[] = await this.requestLiveChannels(allChannals);
 
-            const response = await fetch(`https://api.twitch.tv/kraken/streams/?channel=${channals.map(i => i.id).join(',')}&limit=100`, {
-                headers: this.headers
-            });
-            const json = await response.json();
-
-            const streams: Channel[] = json.streams.map(item => ({
-                id: String(item.channel._id),
-                status: Status.live,
-                service: Service.twitch,
-                name: item.channel.display_name,
-                logo: item.channel.logo,
-                viewers: item.viewers,
-                link: item.channel.url,
-                notification: false,
-                title: item.channel.status
-            }));
-
-            localStorage.setItem(this.localStoreKeys.streams, JSON.stringify(streams));
+            localStorage.setItem(this.localStoreKeys.streams, JSON.stringify(channels));
             this.lastRequest[this.localStoreKeys.streams] = Date.now();
 
-            return streams;
+            return channels;
         } catch (err) {
             console.error(err);
             return [];
