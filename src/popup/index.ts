@@ -53,16 +53,20 @@ $(window).on('load', () => {
     });
 
     $('.settings__form').submit(e => {
-        $('.loading').show();
-        $('.settings').hide();
+        const value = $('.settings__form .form__input').val();
 
-        chrome.runtime.sendMessage({
-            message: 'accountImport',
-            data: $('.settings__form .form__input').val()
-        });
+        if (value) {
+            $('.loading').show();
+            $('.settings').hide();
 
-        $('.settings__form .form__input').val('');
-        $('.form__error').hide();
+            chrome.runtime.sendMessage({
+                message: 'accountImport',
+                data: value
+            });
+
+            $('.settings__form .form__input').val('');
+            $('.form__error').hide();
+        }
 
         e.preventDefault();
     })
@@ -91,7 +95,9 @@ function listChannels(channels: Channel[]) {
     let filterChannels: Channel[] = [];
 
     if (currentTab === Tab.offline) {
-        filterChannels = channels.filter(channel => channel.status === Status.offline);
+        filterChannels = channels
+            .filter(channel => channel.status === Status.offline)
+            .reverse();
 
         filterChannels.forEach(item => {
             $('.list').append(`
