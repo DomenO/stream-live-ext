@@ -120,10 +120,6 @@ button, input[type=submit] {
     max-height: 500px;
 }
 
-.list .stream-item:not(:first-of-type) {
-    margin-top: 5px;
-}
-
 .stream-item__logo {
     width: 48px;
     height: 48px;
@@ -165,7 +161,7 @@ button, input[type=submit] {
     text-decoration: none;
     color: #000;
     font-weight: bold;
-    padding: 5px;
+    padding: 8px 5px;
     transition: background-color linear 100ms;
 }
 

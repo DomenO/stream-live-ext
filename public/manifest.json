@@ -1,9 +1,9 @@
 {
     "name": "Stream Live",
-    "version": "1.0",
-    "description": "Build an Extension!",
+    "version": "1.0.0",
+    "description": "Follow your favorite streams on Twitch",
     "permissions": [
-        "notifications"
+        "https://api.twitch.tv/kraken/*"
     ],
     "background": {
         "scripts": [
