@@ -1,60 +1,19 @@
-import {Twitch} from './twitch';
+import {Service} from './service';
+import {Message, MessageType} from '../models/message';
 
-const twitch = new Twitch();
 
-let timeout: number;
-
-refreshBadge();
+const service = new Service();
 
 chrome.runtime.onMessage.addListener(
-    function(request) {
-        switch (request.message) {
-            case 'requestChannels':
-                requestChannels();
+    function (request: Message) {
+        switch (request.event) {
+            case MessageType.requestChannels:
+                service.requestChannels();
                 break;
 
-            case 'accountImport':
-                accountImport(request.data);
+            case MessageType.accountLogin:
+                service.accountLogin(request.data);
                 break;
         }
     }
 );
-
-async function accountImport(name: string) {    
-    if (await twitch.login(name)) {
-        await refreshBadge();
-        chrome.runtime.sendMessage({
-            message: 'loginSuccessful'
-        });
-
-    } else
-        chrome.runtime.sendMessage({
-            message: 'accountNotFound'
-        });
-}
-
-async function requestChannels() {
-    if (await twitch.checkLogin()) {
-        chrome.runtime.sendMessage({
-            message: 'listChannels',
-            data: await twitch.getChannels()
-        });
-        await refreshBadge();
-
-    } else 
-        chrome.runtime.sendMessage({
-            message: 'login'
-        });
-}
-
-async function refreshBadge() {
-    if(!await twitch.checkLogin()) return;
-    
-    const count = await twitch.getCountStreams();
-
-    chrome.browserAction.setBadgeBackgroundColor({color: '#2D2D2D'});
-    chrome.browserAction.setBadgeText({text: count ? String(count) : ''});
-
-    clearTimeout(timeout);
-    timeout = setTimeout(() => refreshBadge(), 5 * 60 * 1000);
-}

@@ -31,14 +31,14 @@ export class Twitch {
             });
             const json = await response.json();
 
-            if (json.users.length !== 1)
+            if (json._total !== 1)
                 return false;
 
             this.userId = json.users[0]._id;
             this.lastRequest = {};
-            
+
             localStorage.setItem(this.localStoreKeys.userId, this.userId);
-            
+
             return true;
         } catch (err) {
             console.error(err);
@@ -64,7 +64,7 @@ export class Twitch {
             const allChannels = await this.getAllChannels();
             const liveChannels = await this.getLiveChannels();
 
-            return allChannels.map(channel => 
+            return allChannels.map(channel =>
                 liveChannels.find(ch => ch.id === channel.id) || channel
             );
         } catch (err) {
@@ -83,25 +83,25 @@ export class Twitch {
                 `https://api.twitch.tv/kraken/users/${this.userId}/follows/channels` +
                 `?sortby=login` +
                 `&offset=${offset}` +
-                `&limit=${limit}`, 
-            {headers: this.headers});
+                `&limit=${limit}`,
+                {headers: this.headers});
             const json = await response.json();
 
-            channels = 
-            [
-                ...channels,
-                ...json.follows.map(item => ({
-                    id: String(item.channel._id),
-                    status: Status.offline,
-                    service: Service.twitch,
-                    name: item.channel.display_name,
-                    logo: item.channel.logo,
-                    link: item.channel.url,
-                    title: item.channel.status,
-                    notification: false,
-                    viewers: 0,
-                }))
-            ];
+            channels =
+                [
+                    ...channels,
+                    ...json.follows.map(item => ({
+                        id: String(item.channel._id),
+                        status: Status.offline,
+                        service: Service.twitch,
+                        name: item.channel.display_name,
+                        logo: item.channel.logo,
+                        link: item.channel.url,
+                        title: item.channel.status,
+                        notification: false,
+                        viewers: 0,
+                    }))
+                ];
 
             offset = channels.length;
 
@@ -141,25 +141,25 @@ export class Twitch {
                 `https://api.twitch.tv/kraken/streams/` +
                 `?channel=${allChannals.map(i => i.id).join(',')}` +
                 `&offset=${offset}` +
-                `&limit=${limit}`, 
-            {headers: this.headers});
+                `&limit=${limit}`,
+                {headers: this.headers});
             const json = await response.json();
 
-            channels = 
-            [
-                ...channels,
-                ...json.streams.map(item => ({
-                    id: String(item.channel._id),
-                    status: Status.live,
-                    service: Service.twitch,
-                    name: item.channel.display_name,
-                    logo: item.channel.logo,
-                    viewers: item.viewers,
-                    link: item.channel.url,
-                    notification: false,
-                    title: item.channel.status
-                }))
-            ];
+            channels =
+                [
+                    ...channels,
+                    ...json.streams.map(item => ({
+                        id: String(item.channel._id),
+                        status: Status.live,
+                        service: Service.twitch,
+                        name: item.channel.display_name,
+                        logo: item.channel.logo,
+                        viewers: item.viewers,
+                        link: item.channel.url,
+                        notification: false,
+                        title: item.channel.status
+                    }))
+                ];
 
             offset = channels.length;
 

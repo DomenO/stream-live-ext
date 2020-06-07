@@ -63,9 +63,9 @@ button, input[type=submit] {
 .settings__form {
     display: flex;
     flex-direction: column;
-    justify-content: center;
     align-items: center;
-    height: 200px;
+    margin-top: 75px;
+    height: 125px;
 }
 
 .settings__inputs {
@@ -103,7 +103,7 @@ button, input[type=submit] {
 }
 
 .settings__form .form__submit:hover {
-    background-color: #FF5C5C;    
+    background-color: #FF5C5C;
 }
 
 .settings__form .form__error {
@@ -139,10 +139,10 @@ button, input[type=submit] {
     margin-left: 10px;
     display: flex;
     flex-direction: column;
-    justify-content: space-between;            
+    justify-content: space-between;
     flex-flow: column nowrap;
     position: relative;
-    min-width: 0; 
+    min-width: 0;
 }
 
 .stream-item__viewers {
