@@ -145,11 +145,6 @@ button, input[type=submit] {
     min-width: 0;
 }
 
-.stream-item__viewers {
-    font-size: 0.9em;
-    line-height: 1rem;
-}
-
 .stream-item__icon {
     width: 1rem;
     height: 1rem;
@@ -174,4 +169,17 @@ button, input[type=submit] {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis
+}
+
+.stream-item__bottom {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.9em;
+    line-height: 1rem;
+}
+
+.stream-item__up-time {
+    opacity: 0.6;
+    width: 120px;
 }

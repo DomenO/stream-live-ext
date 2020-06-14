@@ -98,8 +98,7 @@ export class Twitch {
                         logo: item.channel.logo,
                         link: item.channel.url,
                         title: item.channel.status,
-                        notification: false,
-                        viewers: 0,
+                        notification: false
                     }))
                 ];
 
@@ -157,7 +156,8 @@ export class Twitch {
                         viewers: item.viewers,
                         link: item.channel.url,
                         notification: false,
-                        title: item.channel.status
+                        title: item.channel.status,
+                        startTime: new Date(item.created_at)
                     }))
                 ];
 

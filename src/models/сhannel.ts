@@ -15,6 +15,7 @@ export interface Channel {
     logo: string;
     link: string;
     notification: boolean;
-    viewers: number;
     title: string;
+    viewers?: number;
+    startTime?: Date;
 }

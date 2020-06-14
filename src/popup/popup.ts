@@ -13,15 +13,21 @@ export class Popup {
         </a>
     `;
 
-    private templateLiveChannel = (link: string, logo: string, title: string, viewers: number) => `
+    private templateLiveChannel = (link: string, logo: string, title: string, viewers: string, upTime: string) => `
         <a class="stream-item" href="${link}" target="_blank">
             <img class="stream-item__logo" src="${logo}" alt="logo" />
             <section class="stream-item__content">
                 <span class="stream-item__title">${title}</span>
-                <span class="stream-item__viewers">
-                    <img class="stream-item__icon" alt="people" src="/assets/people.svg" />
-                    ${String(viewers).replace(/(\d)(?=(\d\d\d)+([^\d]|$))/g, '$1 ')}
-                </span>
+                <section class="stream-item__bottom">
+                    <span class="stream-item__viewers">
+                        <img class="stream-item__icon" alt="people" src="/assets/people.svg" />
+                        ${viewers}
+                    </span>
+                    <span class="stream-item__up-time">
+                        <img class="stream-item__icon" alt="time" src="/assets/time.svg" />
+                        ${upTime}
+                    </span>
+                </section>
             </section>
         </a>
     `;
@@ -57,10 +63,10 @@ export class Popup {
         $('.loading').hide();
 
         if (this.tabs.currentTab === Tab.offline) {
-            this.outputLiveChannels(channels);
+            this.outputOfflineChannels(channels);
 
         } else if (this.tabs.currentTab === Tab.live) {
-            this.outputOfflineChannels(channels);
+            this.outputLiveChannels(channels);
         }
     }
 
@@ -87,7 +93,7 @@ export class Popup {
         })
     }
 
-    private outputLiveChannels(channels: Channel[]) {
+    private outputOfflineChannels(channels: Channel[]) {
         const filterChannels = channels
             .filter(channel => channel.status === Status.offline)
             .reverse();
@@ -102,7 +108,7 @@ export class Popup {
         );
     }
 
-    private outputOfflineChannels(channels: Channel[]) {
+    private outputLiveChannels(channels: Channel[]) {
         const filterChannels = channels
             .filter(channel => channel.status === Status.live)
             .sort((a, b) => b.viewers - a.viewers);
@@ -110,11 +116,23 @@ export class Popup {
         if (filterChannels.length === 0)
             this.outputEmpty();
 
-        filterChannels.forEach(item =>
-            $('.list').append(
-                this.templateLiveChannel(item.link, item.logo, item.title, item.viewers)
+        filterChannels.forEach(item => {
+            const date = new Date();
+            const upTime = new Date(
+                date.getTime() - new Date(item.startTime).getTime() + date.getTimezoneOffset() * 60 * 1000
             )
-        );
+                .toLocaleTimeString('ru', {
+                    hour: 'numeric',
+                    minute: '2-digit',
+                    second: '2-digit'
+                });
+
+            const viewers = String(item.viewers).replace(/(\d)(?=(\d\d\d)+([^\d]|$))/g, '$1 ');
+
+            $('.list').append(
+                this.templateLiveChannel(item.link, item.logo, item.title, viewers, upTime)
+            )
+        });
     }
 
     private outputEmpty() {
