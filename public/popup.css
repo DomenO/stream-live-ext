@@ -56,7 +56,6 @@ button, input[type=submit] {
 /* Settings */
 
 .settings {
-    display: none;
     text-align: center;
 }
 
@@ -108,7 +107,6 @@ button, input[type=submit] {
 
 .settings__form .form__error {
     color: red;
-    display: none;
     font-size: 0.8rem;
     margin-top: 5px;
 }

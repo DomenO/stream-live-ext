@@ -6,27 +6,8 @@
 </head>
 
 <body>
-    <nav class="navigation">
-        <button class="navigation__button button__live">Live</button>
-        <button class="navigation__button button__offline">Offline</button>
-        <button class="navigation__button button__setting">Settings</button>
-    </nav>
 
-    <div class="loading">
-        <img alt="loading" src="/assets/loading.svg" />
-    </div>
-
-    <main class="settings">
-        <form class="settings__form">
-            <div class="settings__inputs">
-                <input class="form__input" type="text" placeholder="Twitch account name..." />
-                <input class="form__submit" type="submit" value="Save" />
-            </div>
-            <div class="form__error">Account not found</div>
-        </form>
-    </main>
-
-    <main class="list"></main>
+    <div id="root"></div>
 
     <script src="jquery.js"></script>
     <script src="popup.js"></script>

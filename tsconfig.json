@@ -2,12 +2,14 @@
     "compilerOptions": {
         "rootDir": "src",
         "outDir": "dist",
-        "target": "es2019",
+        "target": "es5",
         "lib": [
-            "es2019",
+            "esnext",
             "dom"
         ],
-        "module": "commonjs",
-        "esModuleInterop": true
+        "module": "esnext",
+        "esModuleInterop": true,
+        "jsx": "react",
+        "moduleResolution": "node"
     }
 }
