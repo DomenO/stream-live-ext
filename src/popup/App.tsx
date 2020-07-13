@@ -6,6 +6,7 @@ import {runtimeStore, ActionType} from './runtime-store';
 import {MessageType} from '../models/message';
 import {Channel} from '../models/сhannel';
 import {Settings} from './Settings';
+import {Icon} from './Icon';
 
 
 enum Tab {
@@ -91,7 +92,7 @@ export function App() {
 
         {
             loading ?
-                <div className="loading"><img alt="loading" src="/assets/loading.svg" /></div> :
+                <div className="loading"><Icon name="spinner" className="loading__icon" /></div> :
                 navigation.find(nav => nav.tab === currentTab).component
         }
     </>);

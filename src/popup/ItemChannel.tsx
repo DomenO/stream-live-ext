@@ -1,5 +1,7 @@
 import * as React from 'react';
 
+import {Icon} from './Icon';
+
 
 export interface PropItemChannel {
     link: string;
@@ -19,14 +21,14 @@ export function ItemChannel(props: PropItemChannel) {
                     {
                         props.viewers &&
                         <span className="stream-item__viewers">
-                            <img className="stream-item__icon" alt="people" src="/assets/people.svg" />
+                            <Icon name="people" className="stream-item__icon" />
                             {props.viewers}
                         </span>
                     }
                     {
                         props.upTime &&
                         <span className="stream-item__up-time">
-                            <img className="stream-item__icon" alt="time" src="/assets/time.svg" />
+                            <Icon name="time" className="stream-item__icon" />
                             {props.upTime}
                         </span>
                     }
