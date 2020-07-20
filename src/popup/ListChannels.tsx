@@ -1,7 +1,8 @@
 import * as React from 'react';
 
 import {Channel, Status} from '../models/сhannel';
-import {ItemChannel, PropItemChannel} from './ItemChannel';
+
+import ItemChannel, {PropItemChannel} from './ItemChannel';
 
 
 interface PropListChannels {
@@ -11,7 +12,7 @@ interface PropListChannels {
 
 type FilterBy = 'offline' | 'online';
 
-export function ListChannels(props: PropListChannels) {
+export default function ListChannels(props: PropListChannels) {
     const channels = processFilterChannels(props.channels, props.filterBy);
 
     const items = 

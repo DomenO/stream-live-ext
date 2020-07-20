@@ -1,12 +1,13 @@
 import * as React from 'react';
 import {useState, useEffect} from 'react';
 
-import {ListChannels} from './ListChannels';
-import {runtimeStore, ActionType} from './runtime-store';
 import {MessageType} from '../models/message';
 import {Channel} from '../models/сhannel';
-import {Settings} from './Settings';
-import {Icon} from './Icon';
+import {runtimeMessageStore, sendRuntimeMessage} from './runtime-message-store';
+
+import ListChannels from './ListChannels';
+import Settings from './Settings';
+import Icon from './Icon';
 
 
 enum Tab {
@@ -21,7 +22,7 @@ interface Navigation {
     component: JSX.Element;
 }
 
-export function App() {
+export default function App() {
     const [channels, setChannels] = useState<Channel[]>([]);
     const [currentTab, setCurrentTab] = useState<Tab>(Tab.live);
     const [loading, setLoading] = useState<boolean>(true);
@@ -45,33 +46,33 @@ export function App() {
     ]
 
     useEffect(() => {
-        runtimeStore.dispatch({
-            type: ActionType.request,
-            event: MessageType.requestChannels
-        });
+        runtimeMessageStore.dispatch(
+            sendRuntimeMessage({event: MessageType.requestChannels})
+        );
     }, []);
 
-    runtimeStore.subscribe(() => {
-        const currentState = runtimeStore.getState();
+    runtimeMessageStore.subscribe(() => {
+        const currentState = runtimeMessageStore.getState();
 
-        if (currentState.event === MessageType.listChannels) {
-            setLoading(false);
-            setChannels(currentState.data);
-        }
+        switch (currentState.event) {
+            case MessageType.listChannels:
+                setLoading(false);
+                setChannels(currentState.data);
+                break;
 
-        else if (currentState.event === MessageType.unauthorized) {
-            setLoading(false);
-            setCurrentTab(Tab.settings);
-        }
+            case MessageType.unauthorized:
+                setLoading(false);
+                setCurrentTab(Tab.settings);
+                break;
 
-        else if (currentState.event === MessageType.authorize) {
-            setLoading(true);
-            setCurrentTab(Tab.live);
-
-            runtimeStore.dispatch({
-                type: ActionType.request,
-                event: MessageType.requestChannels
-            });
+            case MessageType.authorize:
+                setLoading(true);
+                setCurrentTab(Tab.live);
+    
+                runtimeMessageStore.dispatch(
+                    sendRuntimeMessage({event: MessageType.requestChannels})
+                );
+                break;
         }
     });
 

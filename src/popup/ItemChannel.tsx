@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-import {Icon} from './Icon';
+import Icon from './Icon';
 
 
 export interface PropItemChannel {
@@ -11,7 +11,7 @@ export interface PropItemChannel {
     upTime?: string;
 }
 
-export function ItemChannel(props: PropItemChannel) {
+export default function ItemChannel(props: PropItemChannel) {
     return (
         <a className="stream-item" href={props.link} target="_blank">
             <img className="stream-item__logo" src={props.logo} alt="logo" />

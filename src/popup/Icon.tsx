@@ -10,7 +10,7 @@ interface IconProps {
 
 const url = '/assets/icons.svg';
 
-export function Icon(props: IconProps) {
+export default function Icon(props: IconProps) {
     return (
         <svg
             aria-hidden="true"

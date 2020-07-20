@@ -2,10 +2,10 @@ import * as React from 'react';
 import {useState, FormEvent, ChangeEvent} from 'react';
 
 import {MessageType} from '../models/message';
-import {runtimeStore, ActionType} from './runtime-store';
+import {runtimeMessageStore, sendRuntimeMessage} from './runtime-message-store';
 
 
-export function Settings() {
+export default function Settings() {
     const [state, setState] = useState<{[K: string]: string}>();
     const [error, setError] = useState<boolean>(false);
     
@@ -17,17 +17,18 @@ export function Settings() {
     }
     
     const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
-        runtimeStore.dispatch({
-            type: ActionType.request,
-            event: MessageType.accountLogin,
-            data: state.accountName
-        });
+        runtimeMessageStore.dispatch(
+            sendRuntimeMessage({
+                event: MessageType.accountLogin,
+                data: state.accountName
+            })
+        );
 
         event.preventDefault();
     }
 
-    runtimeStore.subscribe(() => {
-        const currentState = runtimeStore.getState();
+    runtimeMessageStore.subscribe(() => {
+        const currentState = runtimeMessageStore.getState();
 
         if (currentState.event === MessageType.error) {
             setError(true);
