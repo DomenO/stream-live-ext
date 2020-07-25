@@ -56,6 +56,7 @@ function getPropItemChannel(channel: Channel, filterBy: FilterBy): PropItemChann
         case 'online':
             return {
                 ...props,
+                title: channel.title,
                 viewers:  String(channel.viewers).replace(/(\d)(?=(\d\d\d)+([^\d]|$))/g, '$1 '),
                 upTime: calcUpTime(channel.startTime)
             }
@@ -66,15 +67,17 @@ function getPropItemChannel(channel: Channel, filterBy: FilterBy): PropItemChann
 }
 
 function calcUpTime(startTime: Date): string {
-    const date = new Date();
-    const upTime = new Date(
-        date.getTime() - new Date(startTime).getTime() + date.getTimezoneOffset() * 60 * 1000
-    )
-        .toLocaleTimeString('default', {
-            hour: 'numeric',
-            minute: '2-digit',
-            second: '2-digit'
-        });
+    const z = (num: Number) => (num < 10 ? '0' : '') + num;
 
-    return upTime;
+    const startTimeTs = new Date(startTime).getTime();
+    const currentTs = new Date(new Date().toUTCString()).getTime();
+    const upTime = new Date(currentTs - startTimeTs).getTime();
+
+    let seconds = Math.floor(upTime / 1000);
+    let minute = Math.floor(seconds / 60);
+    seconds = seconds % 60;
+    let hour = Math.floor(minute / 60);
+    minute = minute % 60;
+
+    return `${z(hour)}:${z(minute)}:${z(seconds)}`;
 }
