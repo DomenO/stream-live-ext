@@ -2,7 +2,7 @@ import * as React from 'react';
 import {useState, FormEvent, ChangeEvent} from 'react';
 
 import {MessageType} from '../models/message';
-import {runtimeMessageStore, sendRuntimeMessage} from './runtime-message-store';
+import {runtimeMessageStore, sendRuntimeMessageAction} from './runtime-message-store';
 
 
 export default function Settings() {
@@ -18,7 +18,7 @@ export default function Settings() {
     
     const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
         runtimeMessageStore.dispatch(
-            sendRuntimeMessage({
+            sendRuntimeMessageAction({
                 event: MessageType.accountLogin,
                 data: state.accountName
             })

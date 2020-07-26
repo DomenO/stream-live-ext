@@ -1,4 +1,5 @@
 import * as React from 'react';
+import {connect} from 'react-redux';
 
 import {Channel, Status} from '../models/сhannel';
 
@@ -12,7 +13,7 @@ interface PropListChannels {
 
 type FilterBy = 'offline' | 'online';
 
-export default function ListChannels(props: PropListChannels) {
+function ListChannels(props: PropListChannels) {
     const channels = processFilterChannels(props.channels, props.filterBy);
 
     const items = 
@@ -81,3 +82,9 @@ function calcUpTime(startTime: Date): string {
 
     return `${z(hour)}:${z(minute)}:${z(seconds)}`;
 }
+
+export default connect(
+    (state: Map<string, Channel>) => ({
+        channels: state ? Array.from(state.values()) : []
+    })
+)(ListChannels);

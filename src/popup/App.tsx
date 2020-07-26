@@ -1,9 +1,10 @@
 import * as React from 'react';
 import {useState, useEffect} from 'react';
+import {Provider} from 'react-redux';
 
 import {MessageType} from '../models/message';
-import {Channel} from '../models/сhannel';
-import {runtimeMessageStore, sendRuntimeMessage} from './runtime-message-store';
+import {runtimeMessageStore, sendRuntimeMessageAction} from './runtime-message-store';
+import {channelsStore, setChannelsAction} from './channels-store';
 
 import ListChannels from './ListChannels';
 import Settings from './Settings';
@@ -23,7 +24,6 @@ interface Navigation {
 }
 
 export default function App() {
-    const [channels, setChannels] = useState<Channel[]>([]);
     const [currentTab, setCurrentTab] = useState<Tab>(Tab.live);
     const [loading, setLoading] = useState<boolean>(true);
 
@@ -31,12 +31,20 @@ export default function App() {
         {
             text: 'Live',
             tab: Tab.live,
-            component: <ListChannels filterBy="online" channels={channels} />
+            component: (
+                <Provider store={channelsStore}>
+                    <ListChannels filterBy="online" />
+                </Provider>
+            )
         },
         {
             text: 'Offline',
             tab: Tab.offline,
-            component: <ListChannels filterBy="offline" channels={channels} />
+            component: (
+                <Provider store={channelsStore}>
+                    <ListChannels filterBy="offline" />
+                </Provider>
+            )
         },
         {
             text: 'Settings',
@@ -47,17 +55,19 @@ export default function App() {
 
     useEffect(() => {
         runtimeMessageStore.dispatch(
-            sendRuntimeMessage({event: MessageType.requestChannels})
+            sendRuntimeMessageAction({event: MessageType.requestChannels})
         );
     }, []);
 
     runtimeMessageStore.subscribe(() => {
-        const currentState = runtimeMessageStore.getState();
+        const runtimeMessagState = runtimeMessageStore.getState();
 
-        switch (currentState.event) {
+        switch (runtimeMessagState.event) {
             case MessageType.listChannels:
                 setLoading(false);
-                setChannels(currentState.data);
+                channelsStore.dispatch(
+                    setChannelsAction(runtimeMessagState.data)
+                )
                 break;
 
             case MessageType.unauthorized:
@@ -70,7 +80,7 @@ export default function App() {
                 setCurrentTab(Tab.live);
     
                 runtimeMessageStore.dispatch(
-                    sendRuntimeMessage({event: MessageType.requestChannels})
+                    sendRuntimeMessageAction({event: MessageType.requestChannels})
                 );
                 break;
         }

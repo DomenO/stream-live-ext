@@ -10,11 +10,11 @@ interface RuntimeMessageAction extends Action<string> {
     message: Message;
 };
 
-export function sendRuntimeMessage(message: Message): RuntimeMessageAction {
+export function sendRuntimeMessageAction(message: Message): RuntimeMessageAction {
     return {type: ACTION_REQUEST, message};
 }
 
-export function getRuntimeMessage(message: Message): RuntimeMessageAction {
+export function getRuntimeMessageAction(message: Message): RuntimeMessageAction {
     return {type: ACTION_RESPONSE, message};
 }
 
