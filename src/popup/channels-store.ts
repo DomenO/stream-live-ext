@@ -11,28 +11,53 @@ interface ChannelsAction extends Action<string> {
 };
 
 export function setChannelsAction(channels: Channel[]): ChannelsAction {
-    return {type: ACTION_SET, channels};
+    const favorites = loadFavoritesLocalStore();
+
+    return {
+        type: ACTION_SET,
+        channels: channels.map(channel => ({
+            ...channel,
+            favorite: favorites.has(channel.id)
+        }))
+    };
 }
 
 export function updateChannelAction(channel: Channel): ChannelsAction {
+    const favorites = loadFavoritesLocalStore();
+    
+    channel.favorite ?
+        favorites.add(channel.id) :
+        favorites.delete(channel.id);
+
+    saveFavoritesLocalStore(favorites);
+
     return {type: ACTION_UPDATE, channels: [channel]};
 }
 
 export const channelsStore = createStore(
-    (state: Map<string, Channel>, action: ChannelsAction) => {
+    (state: Channel[], action: ChannelsAction) => {
 
         switch (action.type) {
             case ACTION_SET:
-                return new Map(
-                    action.channels.map(channel => (
-                        [channel.id, channel]
-                    ))
-                );
+                return action.channels;
         
             case ACTION_UPDATE:
-                return state.set(action.channels[0].id, action.channels[0])
+                let channel = state.find(channel => channel.id === action.channels[0].id);
+
+                if (channel)
+                    channel = Object.assign(channel, action.channels[0]);
+
+                return [...state];
         }
         
         return state;
     }
 );
+
+function loadFavoritesLocalStore(): Set<string> {
+    return new Set(JSON.parse(localStorage.getItem('favorites')) || []);
+}
+
+function saveFavoritesLocalStore(favorites: Set<string>) {
+    localStorage.setItem('favorites', JSON.stringify(Array.from(favorites)));
+}

@@ -18,4 +18,5 @@ export interface Channel {
     title: string;
     viewers?: number;
     startTime?: Date;
+    favorite?: boolean;
 }
