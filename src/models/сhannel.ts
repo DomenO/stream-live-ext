@@ -3,14 +3,14 @@ export enum Status {
     offline = 'offline'
 }
 
-export enum Service {
+export enum ServiceType {
     twitch = 'twitch'
 }
 
 export interface Channel {
     id: string;
     status: Status;
-    service: Service;
+    service: ServiceType;
     name: string;
     logo: string;
     link: string;

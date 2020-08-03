@@ -1,23 +1,23 @@
 import {Message, MessageType} from '../models/message';
 
-import {Service} from './service';
+import {App} from './app';
 
 
-const service = new Service();
+const app = new App();
 
 chrome.runtime.onMessage.addListener(
     function (request: Message) {
         switch (request.event) {
             case MessageType.requestChannels:
-                service.requestChannels();
+                app.requestChannels();
                 break;
 
             case MessageType.accountLogin:
-                service.accountLogin(request.data);
+                app.accountLogin(request.data);
                 break;
 
             case MessageType.updateChannel:
-                service.updateChannel(request.data);
+                app.updateChannel(request.data);
                 break;
         }
     }

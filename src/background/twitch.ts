@@ -1,6 +1,9 @@
-import {Channel, Status, Service} from "../models/сhannel";
+import {Channel, Status, ServiceType} from '../models/сhannel';
 
-export class Twitch {
+import {Service} from './service';
+
+
+export class Twitch extends Service {
     private readonly clientId = '332vpf76orpamw6yj9jqps6byjgj8n';
     private readonly headers = {
         'Accept': 'application/vnd.twitchtv.v5+json',
@@ -8,9 +11,9 @@ export class Twitch {
     }
 
     private readonly localStoreKeys = {
-        userId: Service.twitch + '_user_id',
-        live: Service.twitch + '_live_channels',
-        channels: Service.twitch + '_all_channels',
+        userId: ServiceType.twitch + '_user_id',
+        live: ServiceType.twitch + '_live_channels',
+        channels: ServiceType.twitch + '_all_channels',
     }
 
     private lastRequest: {[K: string]: number} = {};
@@ -18,6 +21,8 @@ export class Twitch {
     private userId?: string;
 
     constructor() {
+        super();
+
         this.userId = localStorage.getItem(this.localStoreKeys.userId) || undefined;
 
         this.cacheTimeout[this.localStoreKeys.channels] = 1 * 60 * 60;
@@ -63,10 +68,11 @@ export class Twitch {
         try {
             const allChannels = await this.getAllChannels();
             const liveChannels = await this.getLiveChannels();
-
-            return allChannels.map(channel =>
+            const channels = allChannels.map(channel =>
                 liveChannels.find(ch => ch.id === channel.id) || channel
             );
+
+            return super.prepareChannels(channels);
         } catch (err) {
             console.error(err);
             return [];
@@ -93,7 +99,7 @@ export class Twitch {
                     ...json.follows.map(item => ({
                         id: String(item.channel._id),
                         status: Status.offline,
-                        service: Service.twitch,
+                        service: ServiceType.twitch,
                         name: item.channel.display_name,
                         logo: item.channel.logo,
                         link: item.channel.url,
@@ -149,7 +155,7 @@ export class Twitch {
                     ...json.streams.map(item => ({
                         id: String(item.channel._id),
                         status: Status.live,
-                        service: Service.twitch,
+                        service: ServiceType.twitch,
                         name: item.channel.display_name,
                         logo: item.channel.logo,
                         viewers: item.viewers,
@@ -177,12 +183,12 @@ export class Twitch {
             }
 
             const allChannals = await this.getAllChannels();
-            const channels: Channel[] = await this.requestLiveChannels(allChannals);
+            const liveChannels: Channel[] = await this.requestLiveChannels(allChannals);
 
-            localStorage.setItem(this.localStoreKeys.live, JSON.stringify(channels));
+            localStorage.setItem(this.localStoreKeys.live, JSON.stringify(liveChannels));
             this.lastRequest[this.localStoreKeys.live] = Date.now();
 
-            return channels;
+            return liveChannels;
         } catch (err) {
             console.error(err);
             return [];

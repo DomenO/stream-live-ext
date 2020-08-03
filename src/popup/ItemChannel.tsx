@@ -1,5 +1,5 @@
 import * as React from 'react';
-import {useState, useEffect} from 'react';
+import {useState} from 'react';
 
 import Icon from './Icon';
 
@@ -22,13 +22,8 @@ export interface PropItemChannel {
 }
 
 export default function ItemChannel(props: PropItemChannel) {
-    const [favorite, setFavorite] = useState<boolean>(false);
-    const [notification, setNotification] = useState<boolean>(false);
-
-    useEffect(() => {
-        setFavorite(props.favorite);
-        setNotification(props.notification);
-    }, []);
+    const [favorite, setFavorite] = useState<boolean>(props.favorite);
+    const [notification, setNotification] = useState<boolean>(props.notification);
 
     const handleFavoriteClick = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
         setFavorite(!favorite);
