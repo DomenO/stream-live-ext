@@ -1,6 +1,9 @@
 import {createStore, Action} from 'redux';
 
 import {Channel} from '../models/сhannel';
+import {MessageType} from '../models/message';
+
+import {runtimeMessageStore, sendRuntimeMessageAction} from './runtime-message-store';
 
 
 const ACTION_SET = 'ACTION_SET';
@@ -11,26 +14,17 @@ interface ChannelsAction extends Action<string> {
 };
 
 export function setChannelsAction(channels: Channel[]): ChannelsAction {
-    const favorites = loadFavoritesLocalStore();
-
-    return {
-        type: ACTION_SET,
-        channels: channels.map(channel => ({
-            ...channel,
-            favorite: favorites.has(channel.id)
-        }))
-    };
+    return {type: ACTION_SET, channels};
 }
 
 export function updateChannelAction(channel: Channel): ChannelsAction {
-    const favorites = loadFavoritesLocalStore();
+    runtimeMessageStore.dispatch(
+        sendRuntimeMessageAction({
+            event: MessageType.updateChannel,
+            data: channel
+        })
+    );
     
-    channel.favorite ?
-        favorites.add(channel.id) :
-        favorites.delete(channel.id);
-
-    saveFavoritesLocalStore(favorites);
-
     return {type: ACTION_UPDATE, channels: [channel]};
 }
 
@@ -53,11 +47,3 @@ export const channelsStore = createStore(
         return state;
     }
 );
-
-function loadFavoritesLocalStore(): Set<string> {
-    return new Set(JSON.parse(localStorage.getItem('favorites')) || []);
-}
-
-function saveFavoritesLocalStore(favorites: Set<string>) {
-    localStorage.setItem('favorites', JSON.stringify(Array.from(favorites)));
-}

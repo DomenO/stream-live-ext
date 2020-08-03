@@ -1,7 +1,7 @@
 import * as React from 'react';
 
 
-type IconName = 'spinner' | 'people' | 'time' | 'star-outline' | 'star-fill';
+type IconName = 'spinner' | 'people' | 'time' | 'star-outline' | 'star-fill' | 'notification' | 'notification-off';
 
 interface IconProps {
     name: IconName;

@@ -3,7 +3,9 @@
     "version": "1.0.0",
     "description": "Follow your favorite streams on Twitch",
     "permissions": [
-        "https://api.twitch.tv/kraken/*"
+        "https://api.twitch.tv/kraken/*",
+        "https://static-cdn.jtvnw.net/*",
+        "notifications"
     ],
     "background": {
         "scripts": [

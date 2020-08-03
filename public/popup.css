@@ -205,8 +205,10 @@ svg {
 }
 
 .stream-item__controls {
-    min-width: 40px;
-    width: 40px;
+    display: flex;
+    justify-content: space-around;
+    min-width: 56px;
+    width: 56px;
 }
 
 .stream-item__button {

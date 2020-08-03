@@ -1,5 +1,6 @@
-import {Service} from './service';
 import {Message, MessageType} from '../models/message';
+
+import {Service} from './service';
 
 
 const service = new Service();
@@ -13,6 +14,10 @@ chrome.runtime.onMessage.addListener(
 
             case MessageType.accountLogin:
                 service.accountLogin(request.data);
+                break;
+
+            case MessageType.updateChannel:
+                service.updateChannel(request.data);
                 break;
         }
     }

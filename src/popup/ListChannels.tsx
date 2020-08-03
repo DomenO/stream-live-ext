@@ -25,13 +25,21 @@ function ListChannels(props: PropListChannels) {
         if (!channel)
             return;
 
-        if (type === ChannelEventType.favorite)
-            props.updateChannel({
-                ...channel,
-                favorite: !channel.favorite
-            });
+        switch (type) {
+            case ChannelEventType.favorite:
+                props.updateChannel({
+                    ...channel,
+                    favorite: !channel.favorite
+                });
+                break;
 
-        event.preventDefault();
+            case ChannelEventType.notification:
+                props.updateChannel({
+                    ...channel,
+                    notification: !channel.notification
+                });
+                break;
+        }
     }
 
     const items = 
@@ -58,13 +66,13 @@ function processFilterChannels(channels: Channel[], filterBy: FilterBy) {
             return channels
                 .filter(channel => channel.status === Status.live)
                 .sort((a, b) => b.viewers - a.viewers)
-                .sort((a, b) => a.favorite ? -1 : 1);
+                .sort((a, b) => Number(b.favorite) - Number(a.favorite));
 
         case 'offline':
             return channels
                 .filter(channel => channel.status === Status.offline)
                 .reverse()
-                .sort((a, b) => a.favorite ? -1 : 1);
+                .sort((a, b) => Number(b.favorite) - Number(a.favorite));
     }
 }
 
@@ -74,7 +82,8 @@ function getPropItemChannel(channel: Channel, filterBy: FilterBy): PropItemChann
         link: channel.link,
         title: channel.name,
         logo: channel.logo,
-        favorite: channel.favorite
+        favorite: channel.favorite,
+        notification: channel.notification
     };
 
     switch (filterBy) {
@@ -82,8 +91,8 @@ function getPropItemChannel(channel: Channel, filterBy: FilterBy): PropItemChann
             return {
                 ...props,
                 title: channel.title,
-                viewers:  String(channel.viewers).replace(/(\d)(?=(\d\d\d)+([^\d]|$))/g, '$1 '),
-                upTime: calcUpTime(channel.startTime)
+                viewers: String(channel.viewers).replace(/(\d)(?=(\d\d\d)+([^\d]|$))/g, '$1 '),
+                upTime: calcUpTime(channel.startTimeTs)
             }
     
         case 'offline':
@@ -91,10 +100,9 @@ function getPropItemChannel(channel: Channel, filterBy: FilterBy): PropItemChann
     }
 }
 
-function calcUpTime(startTime: Date): string {
+function calcUpTime(startTimeTs: number): string {
     const z = (num: Number) => (num < 10 ? '0' : '') + num;
 
-    const startTimeTs = new Date(startTime).getTime();
     const currentTs = new Date(new Date().toUTCString()).getTime();
     const upTime = new Date(currentTs - startTimeTs).getTime();
 

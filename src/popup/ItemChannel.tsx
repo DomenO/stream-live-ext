@@ -5,7 +5,8 @@ import Icon from './Icon';
 
 
 export enum ChannelEventType {
-    favorite
+    favorite,
+    notification
 }
 
 export interface PropItemChannel {
@@ -16,17 +17,28 @@ export interface PropItemChannel {
     viewers?: string;
     upTime?: string;
     favorite?: boolean;
+    notification?: boolean;
     onChange?: (id: string, event: ChannelEventType) => void;
 }
 
 export default function ItemChannel(props: PropItemChannel) {
     const [favorite, setFavorite] = useState<boolean>(false);
+    const [notification, setNotification] = useState<boolean>(false);
 
-    useEffect(() => setFavorite(props.favorite), []);
+    useEffect(() => {
+        setFavorite(props.favorite);
+        setNotification(props.notification);
+    }, []);
 
-    const handleClick = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>, type: ChannelEventType) => {
+    const handleFavoriteClick = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
         setFavorite(!favorite);
-        props.onChange(props.id, type);
+        props.onChange(props.id, ChannelEventType.favorite);
+        event.preventDefault();
+    }
+
+    const handleNotificationClick = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+        setNotification(!notification);
+        props.onChange(props.id, ChannelEventType.notification);
         event.preventDefault();
     }
 
@@ -37,7 +49,16 @@ export default function ItemChannel(props: PropItemChannel) {
                 <section className="stream-item__top">
                     <span className="stream-item__title">{props.title}</span>
                     <div className="stream-item__controls">
-                        <button className="stream-item__button" onClick={e => handleClick(e, ChannelEventType.favorite)}>
+                        <button
+                            className="stream-item__button"
+                            onClick={e => handleNotificationClick(e)}
+                        >
+                            <Icon name={notification ? "notification" : "notification-off"} />
+                        </button>
+                        <button 
+                            className="stream-item__button" 
+                            onClick={e => handleFavoriteClick(e)}
+                        >
                             <Icon name={favorite ? "star-fill" : "star-outline"} />
                         </button>
                     </div>
