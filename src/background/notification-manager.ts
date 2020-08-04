@@ -3,11 +3,21 @@ export interface ShowNotification {
     title: string;
     message: string;
     image: string;
+    lockTs?: number;
+    onClick?: (id: string) => void;
 }
 
 export class NotificationManager {
+    private lockNotifications = new Set<string>();
 
     show(param: ShowNotification) {
+        if (this.lockNotifications.has(param.id)) return;
+
+        if (param.lockTs) {
+            this.lockNotifications.add(param.id);
+            setTimeout(() => this.lockNotifications.delete(param.id), param.lockTs)
+        }
+
         chrome.notifications.create(
             param.id,
             {
@@ -17,9 +27,8 @@ export class NotificationManager {
                 iconUrl: param.image
             }
         );
-    }
 
-    addClickEvent(callback: (id: string) => void) {
-        chrome.notifications.onClicked.addListener(callback);
+        if (param.onClick && !chrome.notifications.onClicked.hasListener(param.onClick))
+            chrome.notifications.onClicked.addListener(param.onClick);
     }
 }

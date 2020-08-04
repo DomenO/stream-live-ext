@@ -16,8 +16,6 @@ export class App {
         this.twitch = new Twitch();
         this.notificationManager = new NotificationManager();
 
-        this.notificationManager.addClickEvent(url => chrome.tabs.create({url}));
-
         this.runRefreshTask();
     }
 
@@ -76,12 +74,24 @@ export class App {
                 Date.now() - channel.startTimeTs < this.refreshTimeout
             )
             .forEach(channel =>
-                this.notificationManager.show({
-                    id: channel.link,
-                    title: channel.title,
-                    message: channel.name + ' is live now!',
-                    image: channel.logo
-                })
-            );
+                this.showNotification(channel)
+            )
+    }
+
+    private showNotification(channel: Channel) {
+        const params = {
+            id: channel.link,
+            title: channel.title,
+            message: channel.name + ' is live now!',
+            image: channel.logo,
+            lockTs: this.refreshTimeout,
+            onClick: this.onClickNotification
+        }
+
+        this.notificationManager.show(params);
+    }
+
+    private onClickNotification(url: string) {
+        chrome.tabs.create({url});
     }
 }
