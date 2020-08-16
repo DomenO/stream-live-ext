@@ -61,22 +61,42 @@ function ListChannels(props: PropListChannels) {
 }
 
 function processFilterChannels(channels: Channel[], filterBy: FilterBy) {
+    const filterByOnline = (channel: Channel) => [Status.live, Status.replay].includes(channel.status);
+    const filterByOffline = (channel: Channel) => channel.status === Status.offline;
+
+    const sortByViewers = (a: Channel, b: Channel) => b.viewers - a.viewers;
+    const sortByFavorite = (a: Channel, b: Channel) => Number(b.favorite) - Number(a.favorite);
+    const sortByStatus = (a: Channel, b: Channel) => Number(a.status === Status.replay) - Number(b.status === Status.replay);
+    const sortByName = (a: Channel, b: Channel) => a.name.localeCompare(b.name);
+
     switch (filterBy) {
         case 'online':
             return channels
-                .filter(channel => channel.status === Status.live)
-                .sort((a, b) => b.viewers - a.viewers)
-                .sort((a, b) => Number(b.favorite) - Number(a.favorite));
+                .filter(filterByOnline)
+                .sort(sortByName)
+                .sort(sortByViewers)
+                .sort(sortByStatus)
+                .sort(sortByFavorite);
 
         case 'offline':
             return channels
-                .filter(channel => channel.status === Status.offline)
-                .reverse()
-                .sort((a, b) => Number(b.favorite) - Number(a.favorite));
+                .filter(filterByOffline)
+                .sort(sortByName)
+                .sort(sortByFavorite);
     }
 }
 
 function getPropItemChannel(channel: Channel, filterBy: FilterBy): PropItemChannel {
+    const getViewersIcon = (status: Status) => {
+        switch (status) {
+            case Status.replay:
+                return 'repeat';
+
+            default:
+                return 'people';
+        }
+    };
+
     const props: PropItemChannel = {
         id: channel.id,
         link: channel.link,
@@ -92,7 +112,8 @@ function getPropItemChannel(channel: Channel, filterBy: FilterBy): PropItemChann
                 ...props,
                 title: channel.title,
                 viewers: String(channel.viewers).replace(/(\d)(?=(\d\d\d)+([^\d]|$))/g, '$1 '),
-                upTime: calcUpTime(channel.startTimeTs)
+                upTime: calcUpTime(channel.startTimeTs),
+                viewersIcon: getViewersIcon(channel.status)
             }
     
         case 'offline':

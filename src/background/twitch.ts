@@ -87,8 +87,7 @@ export class Twitch extends Service {
         while (offset % limit === 0) {
             const response = await fetch(
                 `https://api.twitch.tv/kraken/users/${this.userId}/follows/channels` +
-                `?sortby=login` +
-                `&offset=${offset}` +
+                `?offset=${offset}` +
                 `&limit=${limit}`,
                 {headers: this.headers});
             const json = await response.json();
@@ -144,6 +143,7 @@ export class Twitch extends Service {
             const response = await fetch(
                 `https://api.twitch.tv/kraken/streams/` +
                 `?channel=${allChannals.map(i => i.id).join(',')}` +
+                `&stream_type=all` +
                 `&offset=${offset}` +
                 `&limit=${limit}`,
                 {headers: this.headers});
@@ -154,7 +154,7 @@ export class Twitch extends Service {
                     ...channels,
                     ...json.streams.map(item => ({
                         id: String(item.channel._id),
-                        status: Status.live,
+                        status: this.getStatus(item.broadcast_platform),
                         service: ServiceType.twitch,
                         name: item.channel.display_name,
                         logo: item.channel.logo,
@@ -192,6 +192,16 @@ export class Twitch extends Service {
         } catch (err) {
             console.error(err);
             return [];
+        }
+    }
+
+    private getStatus(broadcastPlatform: string): Status {
+        switch (broadcastPlatform) {
+            case 'rerun':
+                return Status.replay;
+
+            default:
+                return Status.live;
         }
     }
 }

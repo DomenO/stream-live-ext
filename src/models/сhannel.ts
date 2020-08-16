@@ -1,5 +1,6 @@
 export enum Status {
     live = 'live',
+    replay = 'replay',
     offline = 'offline'
 }
 

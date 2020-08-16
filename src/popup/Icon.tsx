@@ -1,14 +1,22 @@
 import * as React from 'react';
 
 
-type IconName = 'spinner' | 'people' | 'time' | 'star-outline' | 'star-fill' | 'notification' | 'notification-off';
-
 interface IconProps {
     name: IconName;
     className?: string;
 }
 
 const url = '/assets/icons.svg';
+
+export type IconName = 
+    'spinner'
+    | 'people'
+    | 'time'
+    | 'star-outline'
+    | 'star-fill'
+    | 'notification'
+    | 'notification-off'
+    | 'repeat';
 
 export default function Icon(props: IconProps) {
     return (
