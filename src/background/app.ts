@@ -1,8 +1,8 @@
-import {MessageType} from '../models/message';
+import {MessageType, Message} from '../models/message';
 import {Channel, Status} from '../models/сhannel';
 
 import {Twitch} from './twitch';
-import {NotificationManager} from './notification-manager';
+import {NotificationManager, ShowNotification} from './notification-manager';
 
 
 export class App {
@@ -15,11 +15,14 @@ export class App {
     constructor() {
         this.twitch = new Twitch();
         this.notificationManager = new NotificationManager();
+    }
 
+    run() {
+        chrome.runtime.onMessage.addListener(this.processRuntimeMessage.bind(this));
         this.runRefreshTask();
     }
 
-    async accountLogin(name: string) {
+    private async accountLogin(name: string) {
         if (!await this.twitch.login(name))
             return chrome.runtime.sendMessage({event: MessageType.error});
 
@@ -30,7 +33,7 @@ export class App {
         });
     }
 
-    async requestChannels() {
+    private async requestChannels() {
         if (!await this.twitch.checkLogin())
             return chrome.runtime.sendMessage({event: MessageType.unauthorized});
 
@@ -42,7 +45,7 @@ export class App {
         this.runRefreshTask();
     }
 
-    updateChannel(channel: Channel) {
+    private updateChannel(channel: Channel) {
         this.twitch.updateChannel(channel);
         this.requestChannels();
     }
@@ -79,7 +82,7 @@ export class App {
     }
 
     private showNotification(channel: Channel) {
-        const params = {
+        const params: ShowNotification = {
             id: channel.link,
             title: channel.title,
             message: channel.name + ' is live now!',
@@ -93,5 +96,21 @@ export class App {
 
     private onClickNotification(url: string) {
         chrome.tabs.create({url});
+    }
+
+    private processRuntimeMessage(request: Message) {
+        switch (request.event) {
+            case MessageType.requestChannels:
+                this.requestChannels();
+                break;
+
+            case MessageType.accountLogin:
+                this.accountLogin(request.data);
+                break;
+
+            case MessageType.updateChannel:
+                this.updateChannel(request.data);
+                break;
+        }
     }
 }

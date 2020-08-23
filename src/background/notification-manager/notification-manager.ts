@@ -1,11 +1,5 @@
-export interface ShowNotification {
-    id: string;
-    title: string;
-    message: string;
-    image: string;
-    lockTs?: number;
-    onClick?: (id: string) => void;
-}
+import {ShowNotification} from './show-notification.model';
+
 
 export class NotificationManager {
     private lockNotifications = new Set<string>();
