@@ -1,4 +1,4 @@
-import {Channel} from '../models/сhannel';
+import {Channel} from '../../models/сhannel';
 
 
 export abstract class Service {

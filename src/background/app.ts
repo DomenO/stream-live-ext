@@ -1,7 +1,7 @@
 import {MessageType, Message} from '../models/message';
 import {Channel, Status} from '../models/сhannel';
 
-import {Twitch} from './twitch';
+import {Twitch} from './services';
 import {NotificationManager, ShowNotification} from './notification-manager';
 
 

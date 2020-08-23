@@ -1,4 +1,4 @@
-import {Channel, Status, ServiceType} from '../models/сhannel';
+import {Channel, Status, ServiceType} from '../../models/сhannel';
 
 import {Service} from './service';
 
