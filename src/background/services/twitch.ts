@@ -23,8 +23,6 @@ export class Twitch extends Service {
     constructor() {
         super();
 
-        this.userId = localStorage.getItem(this.localStoreKeys.userId) || undefined;
-
         this.cacheTimeout[this.localStoreKeys.channels] = 1 * 60 * 60;
         this.cacheTimeout[this.localStoreKeys.live] = 5 * 60;
     }
@@ -42,7 +40,7 @@ export class Twitch extends Service {
             this.userId = json.users[0]._id;
             this.lastRequest = {};
 
-            localStorage.setItem(this.localStoreKeys.userId, this.userId);
+            await this.storageManager.syncSet(this.localStoreKeys.userId, this.userId);
 
             return true;
         } catch (err) {
@@ -52,6 +50,10 @@ export class Twitch extends Service {
     }
 
     async checkLogin(): Promise<boolean> {
+        if (!this.userId) {
+            this.userId = await this.storageManager.syncGet(this.localStoreKeys.userId);
+        }
+
         return Promise.resolve(!!this.userId);
     }
 
@@ -119,12 +121,12 @@ export class Twitch extends Service {
             const lastRequest = this.lastRequest[this.localStoreKeys.channels];
 
             if (cache && lastRequest && lastRequest > Date.now() - this.cacheTimeout[this.localStoreKeys.channels] * 1000) {
-                return JSON.parse(localStorage.getItem(this.localStoreKeys.channels));
+                return await this.storageManager.localGet(this.localStoreKeys.channels);
             }
 
             const channels: Channel[] = await this.requestAllChannels();
 
-            localStorage.setItem(this.localStoreKeys.channels, JSON.stringify(channels));
+            this.storageManager.localSet(this.localStoreKeys.channels, channels);
             this.lastRequest[this.localStoreKeys.channels] = Date.now();
 
             return channels;
@@ -179,13 +181,13 @@ export class Twitch extends Service {
             const lastRequest = this.lastRequest[this.localStoreKeys.live];
 
             if (cache && lastRequest && lastRequest > Date.now() - this.cacheTimeout[this.localStoreKeys.live] * 1000) {
-                return JSON.parse(localStorage.getItem(this.localStoreKeys.live));
+                return await this.storageManager.localGet(this.localStoreKeys.live);
             }
 
             const allChannals = await this.getAllChannels();
             const liveChannels: Channel[] = await this.requestLiveChannels(allChannals);
 
-            localStorage.setItem(this.localStoreKeys.live, JSON.stringify(liveChannels));
+            this.storageManager.localSet(this.localStoreKeys.live, liveChannels)
             this.lastRequest[this.localStoreKeys.live] = Date.now();
 
             return liveChannels;

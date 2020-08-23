@@ -5,7 +5,8 @@
     "permissions": [
         "https://api.twitch.tv/kraken/*",
         "https://static-cdn.jtvnw.net/*",
-        "notifications"
+        "notifications",
+        "storage"
     ],
     "background": {
         "scripts": [

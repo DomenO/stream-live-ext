@@ -1,16 +1,23 @@
 import {Channel} from '../../models/сhannel';
 
+import {StorageManager} from '../storage-manager';
+
 
 export abstract class Service {
+    protected storageManager: StorageManager;
+
+    constructor() {
+        this.storageManager = new StorageManager();
+    }
 
     abstract async login(id: string): Promise<boolean>;
     abstract async checkLogin(): Promise<boolean>;
     abstract async getCountStreams(): Promise<number>;
     abstract async getChannels(): Promise<Channel[]>;
 
-    updateChannel(channel: Channel) {
-        const favorites = this.loadFavoritesLocalStore();
-        const notifications = this.loadNotificationsLocalStore();
+    async updateChannel(channel: Channel) {
+        const favorites = await this.loadFavoritesLocalStore();
+        const notifications = await this.loadNotificationsLocalStore();
 
         channel.favorite ?
             favorites.add(channel.id) :
@@ -20,13 +27,13 @@ export abstract class Service {
             notifications.add(channel.id) :
             notifications.delete(channel.id);
 
-        this.saveFavoritesLocalStore(favorites);
-        this.saveNotificationsLocalStore(notifications);
+        await this.saveFavoritesLocalStore(favorites);
+        await this.saveNotificationsLocalStore(notifications);
     }
 
-    protected prepareChannels(channels: Channel[]): Channel[] {
-        const favorites = this.loadFavoritesLocalStore();
-        const notifications = this.loadNotificationsLocalStore();
+    protected async prepareChannels(channels: Channel[]): Promise<Channel[]> {
+        const favorites = await this.loadFavoritesLocalStore();
+        const notifications = await this.loadNotificationsLocalStore();
 
         return channels
             .map(channel => ({
@@ -36,19 +43,23 @@ export abstract class Service {
             }));
     }
 
-    private loadFavoritesLocalStore(): Set<string> {
-        return new Set(JSON.parse(localStorage.getItem('favorites')) || []);
+    private async loadFavoritesLocalStore(): Promise<Set<string>> {
+        const data: string[] = await this.storageManager.syncGet('favorites');
+        return new Set(data || []);
     }
 
-    private saveFavoritesLocalStore(favorites: Set<string>) {
-        localStorage.setItem('favorites', JSON.stringify(Array.from(favorites)));
+    private async saveFavoritesLocalStore(favorites: Set<string>) {
+        const data = Array.from(favorites);
+        await this.storageManager.syncSet('favorites', data);
     }
 
-    private loadNotificationsLocalStore(): Set<string> {
-        return new Set(JSON.parse(localStorage.getItem('notifications')) || []);
+    private async loadNotificationsLocalStore(): Promise<Set<string>> {
+        const data: string[] = await this.storageManager.syncGet('notifications');
+        return new Set(data || []);
     }
 
-    private saveNotificationsLocalStore(notifications: Set<string>) {
-        localStorage.setItem('notifications', JSON.stringify(Array.from(notifications)));
+    private async saveNotificationsLocalStore(notifications: Set<string>) {
+        const data = Array.from(notifications);
+        await this.storageManager.syncSet('notifications', data);
     }
 }

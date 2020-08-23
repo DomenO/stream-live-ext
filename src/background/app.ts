@@ -45,9 +45,9 @@ export class App {
         this.runRefreshTask();
     }
 
-    private updateChannel(channel: Channel) {
-        this.twitch.updateChannel(channel);
-        this.requestChannels();
+    private async updateChannel(channel: Channel) {
+        await this.twitch.updateChannel(channel);
+        await this.requestChannels();
     }
 
     private async runRefreshTask() {
