@@ -171,6 +171,8 @@ svg {
     font-weight: bold;
     padding: 8px 5px;
     transition: background-color linear 100ms;
+    content-visibility: auto;
+    contain-intrinsic-size: 64px;
 }
 
 .stream-item:hover {

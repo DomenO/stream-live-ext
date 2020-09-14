@@ -40,7 +40,7 @@ export default function ItemChannel(props: PropItemChannel) {
 
     return (
         <a className="stream-item" href={props.link} target="_blank">
-            <img className="stream-item__logo" src={props.logo} alt="logo" />
+            <img className="stream-item__logo" src={props.logo} alt="logo" loading="lazy" />
 
             <section className="stream-item__content">
                 <section className="stream-item__top">
