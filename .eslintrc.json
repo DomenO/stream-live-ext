@@ -1,0 +1,65 @@
+{
+    "env": {
+        "browser": true,
+        "es6": true
+    },
+    "globals": {
+        "Atomics": "readonly",
+        "SharedArrayBuffer": "readonly"
+    },
+    "parser": "@typescript-eslint/parser",
+    "parserOptions": {
+        "ecmaFeatures": {
+            "jsx": true
+        },
+        "ecmaVersion": 2018,
+        "sourceType": "module"
+    },
+    "plugins": [
+        "react",
+        "react-hooks",
+        "import",
+        "@typescript-eslint"
+    ],
+    "rules": {
+        "indent": [
+            "error",
+            4,
+            {
+                "SwitchCase": 1
+            }
+        ],
+        "quotes": [
+            "error",
+            "single"
+        ],
+        "import/newline-after-import": [
+            "error",
+            {
+                "count": 2
+            }
+        ],
+        "no-console": [
+            "warn",
+            {
+                "allow": [
+                    "error"
+                ]
+            }
+        ],
+        "no-var": "error",
+        "prefer-const": "error",
+        "object-curly-spacing": [
+            "error",
+            "never"
+        ],
+        "array-bracket-spacing": [
+            "error",
+            "never"
+        ],
+        "computed-property-spacing": [
+            "error",
+            "never"
+        ]
+    }
+}

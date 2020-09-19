@@ -50,13 +50,13 @@ export default function ItemChannel(props: PropItemChannel) {
                             className="stream-item__button"
                             onClick={e => handleNotificationClick(e)}
                         >
-                            <Icon name={notification ? "notification" : "notification-off"} />
+                            <Icon name={notification ? 'notification' : 'notification-off'} />
                         </button>
                         <button 
                             className="stream-item__button" 
                             onClick={e => handleFavoriteClick(e)}
                         >
-                            <Icon name={favorite ? "star-fill" : "star-outline"} />
+                            <Icon name={favorite ? 'star-fill' : 'star-outline'} />
                         </button>
                     </div>
                 </section>

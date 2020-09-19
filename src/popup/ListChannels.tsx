@@ -135,7 +135,7 @@ function calcUpTime(startTimeTs: number): string {
     let seconds = Math.floor(upTime / 1000);
     let minute = Math.floor(seconds / 60);
     seconds = seconds % 60;
-    let hour = Math.floor(minute / 60);
+    const hour = Math.floor(minute / 60);
     minute = minute % 60;
 
     return `${z(hour)}:${z(minute)}:${z(seconds)}`;

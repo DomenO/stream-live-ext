@@ -143,9 +143,9 @@ export class Twitch extends Service {
 
         while (offset % limit === 0) {
             const response = await fetch(
-                `https://api.twitch.tv/kraken/streams/` +
+                'https://api.twitch.tv/kraken/streams/' +
                 `?channel=${allChannals.map(i => i.id).join(',')}` +
-                `&stream_type=all` +
+                '&stream_type=all' +
                 `&offset=${offset}` +
                 `&limit=${limit}`,
                 {headers: this.headers});
