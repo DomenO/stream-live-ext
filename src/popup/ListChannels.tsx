@@ -1,4 +1,5 @@
 import * as React from 'react';
+import {useEffect, useRef} from 'react';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 
@@ -17,6 +18,8 @@ interface PropListChannels {
 type FilterBy = 'offline' | 'online';
 
 function ListChannels(props: PropListChannels) {
+    const mainElem = useRef<HTMLElement>(null);
+
     const channels = processFilterChannels(props.channels, props.filterBy);
 
     const handleChange = (id: string, type: ChannelEventType) => {
@@ -53,8 +56,10 @@ function ListChannels(props: PropListChannels) {
 
     const empty = <section className="stream-item__empty">Empty</section>;
 
+    useEffect(() => mainElem.current.scrollTo(0, 0), [props.filterBy]);
+
     return (
-        <main className="list">
+        <main className="list" ref={mainElem}>
             {channels.length > 0 ? items : empty}
         </main>
     );
