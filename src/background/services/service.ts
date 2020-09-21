@@ -1,6 +1,6 @@
 import {Channel} from '../../models/сhannel';
 
-import {StorageManager} from '../storage-manager';
+import {StorageManager} from '../managers/storage';
 
 
 export abstract class Service {

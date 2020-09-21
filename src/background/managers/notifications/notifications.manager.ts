@@ -1,7 +1,7 @@
 import {ShowNotification} from './show-notification.model';
 
 
-export class NotificationManager {
+export class NotificationsManager {
     private lockNotifications = new Set<string>();
 
     show(param: ShowNotification) {

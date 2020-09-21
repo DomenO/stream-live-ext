@@ -2,7 +2,7 @@ import {MessageType, Message} from '../models/message';
 import {Channel, Status} from '../models/сhannel';
 
 import {Twitch} from './services';
-import {NotificationManager, ShowNotification} from './notification-manager';
+import {NotificationsManager, ShowNotification} from './managers/notifications';
 
 
 export class App {
@@ -10,11 +10,11 @@ export class App {
 
     private timeout: number;
     private twitch: Twitch;
-    private notificationManager: NotificationManager;
+    private notificationsManager: NotificationsManager;
 
     constructor() {
         this.twitch = new Twitch();
-        this.notificationManager = new NotificationManager();
+        this.notificationsManager = new NotificationsManager();
     }
 
     run() {
@@ -91,7 +91,7 @@ export class App {
             onClick: this.onClickNotification
         }
 
-        this.notificationManager.show(params);
+        this.notificationsManager.show(params);
     }
 
     private onClickNotification(url: string) {

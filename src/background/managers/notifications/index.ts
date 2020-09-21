@@ -1,2 +1,2 @@
-export * from './notification-manager';
+export * from './notifications.manager';
 export * from './show-notification.model';
