@@ -1,4 +1,4 @@
-import {Channel, Status, ServiceType} from '../../models/сhannel';
+import {Channel, Status, ServiceType, ImportType} from '../../models/сhannel';
 
 import {Service} from './service';
 
@@ -104,7 +104,8 @@ export class Twitch extends Service {
                         name: item.channel.display_name,
                         logo: item.channel.logo,
                         link: item.channel.url,
-                        title: item.channel.status
+                        title: item.channel.status,
+                        importType: ImportType.account
                     }))
                 ];
 
@@ -163,6 +164,7 @@ export class Twitch extends Service {
                         viewers: item.viewers,
                         link: item.channel.url,
                         title: item.channel.status,
+                        importType: ImportType.account,
                         startTimeTs: new Date(item.created_at).getTime()
                     }))
                 ];

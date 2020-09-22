@@ -8,6 +8,11 @@ export enum ServiceType {
     twitch = 'twitch'
 }
 
+export enum ImportType {
+    independent,
+    account
+}
+
 export interface Channel {
     id: string;
     status: Status;
@@ -16,6 +21,7 @@ export interface Channel {
     logo: string;
     link: string;
     title: string;
+    importType: ImportType;
     viewers?: number;
     startTimeTs?: number;
     favorite?: boolean;
