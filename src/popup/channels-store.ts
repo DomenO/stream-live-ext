@@ -17,15 +17,15 @@ export function setChannelsAction(channels: Channel[]): ChannelsAction {
     return {type: ACTION_SET, channels};
 }
 
-export function updateChannelAction(channel: Channel): ChannelsAction {
+export function updateChannelsAction(channels: Channel[]): ChannelsAction {
     runtimeMessageStore.dispatch(
         sendRuntimeMessageAction({
-            event: MessageType.updateChannel,
-            data: channel
+            event: MessageType.updateChannels,
+            data: channels
         })
     );
     
-    return {type: ACTION_UPDATE, channels: [channel]};
+    return {type: ACTION_UPDATE, channels};
 }
 
 export const channelsStore = createStore(

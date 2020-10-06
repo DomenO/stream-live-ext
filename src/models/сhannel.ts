@@ -15,6 +15,7 @@ export enum ImportType {
 
 export interface Channel {
     id: string;
+    groupId: string;
     status: Status;
     service: ServiceType;
     name: string;

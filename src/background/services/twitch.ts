@@ -99,6 +99,7 @@ export class Twitch extends Service {
                     ...channels,
                     ...json.follows.map(item => ({
                         id: String(item.channel._id),
+                        groupId: String(item.channel._id),
                         status: Status.offline,
                         service: ServiceType.twitch,
                         name: item.channel.display_name,
@@ -157,6 +158,7 @@ export class Twitch extends Service {
                     ...channels,
                     ...json.streams.map(item => ({
                         id: String(item.channel._id),
+                        groupId: String(item.channel._id),
                         status: this.getStatus(item.broadcast_platform),
                         service: ServiceType.twitch,
                         name: item.channel.display_name,

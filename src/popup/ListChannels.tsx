@@ -5,14 +5,14 @@ import {bindActionCreators} from 'redux';
 
 import {Channel, Status} from '../models/сhannel';
 
-import {updateChannelAction} from './channels-store';
+import {updateChannelsAction} from './channels-store';
 import ItemChannel, {PropItemChannel, ChannelEventType} from './ItemChannel';
 
 
 interface PropListChannels {
     channels: Channel[];
     filterBy: FilterBy;
-    updateChannel: (channel: Channel) => void;
+    updateChannels: (channels: Channel[]) => void;
 }
 
 type FilterBy = 'offline' | 'online';
@@ -23,24 +23,28 @@ function ListChannels(props: PropListChannels) {
     const channels = processFilterChannels(props.channels, props.filterBy);
 
     const handleChange = (id: string, type: ChannelEventType) => {
-        const channel = props.channels.find(item => item.id === id);
+        const channels = props.channels.filter(item => item.groupId === id);
 
-        if (!channel)
+        if (!channels)
             return;
 
         switch (type) {
             case ChannelEventType.favorite:
-                props.updateChannel({
-                    ...channel,
-                    favorite: !channel.favorite
-                });
+                props.updateChannels(
+                    channels.map(channel => ({
+                        ...channel,
+                        favorite: !channel.favorite
+                    }))
+                );
                 break;
 
             case ChannelEventType.notification:
-                props.updateChannel({
-                    ...channel,
-                    notification: !channel.notification
-                });
+                props.updateChannels(
+                    channels.map(channel => ({
+                        ...channel,
+                        notification: !channel.notification
+                    }))
+                );
                 break;
         }
     }
@@ -103,7 +107,7 @@ function getPropItemChannel(channel: Channel, filterBy: FilterBy): PropItemChann
     };
 
     const props: PropItemChannel = {
-        id: channel.id,
+        id: channel.groupId,
         link: channel.link,
         title: channel.name,
         logo: channel.logo,
@@ -146,6 +150,6 @@ export default connect(
         channels: state ?? []
     }),
     dispatch => ({
-        updateChannel: bindActionCreators(updateChannelAction, dispatch)
+        updateChannels: bindActionCreators(updateChannelsAction, dispatch)
     })
 )(ListChannels);

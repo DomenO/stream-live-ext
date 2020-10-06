@@ -7,7 +7,7 @@ export enum MessageType {
     accountLogin,
     requestChannels,
     listChannels,
-    updateChannel,
+    updateChannels,
     authorize,
     unauthorized,
     error

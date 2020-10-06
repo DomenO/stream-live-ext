@@ -45,8 +45,8 @@ export class App {
         this.runRefreshTask();
     }
 
-    private async updateChannel(channel: Channel) {
-        await this.twitch.updateChannel(channel);
+    private async updateChannels(channels: Channel[]) {
+        await this.twitch.updateChannels(channels);
         await this.requestChannels();
     }
 
@@ -108,8 +108,8 @@ export class App {
                 this.accountLogin(request.data);
                 break;
 
-            case MessageType.updateChannel:
-                this.updateChannel(request.data);
+            case MessageType.updateChannels:
+                this.updateChannels(request.data);
                 break;
         }
     }

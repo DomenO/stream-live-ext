@@ -1,21 +1,21 @@
 export class StorageManager {
     async localSet<T>(key: string, value: T) {
-        return this.setChromeStorage('local', key, value);
+        return this.setBrowserStorage('local', key, value);
     }
 
     async localGet<T>(key: string): Promise<T | undefined> {
-        return this.getChromeStorage('local', key);
+        return this.getBrowserStorage('local', key);
     }
 
     async syncSet<T>(key: string, value: T) {
-        return this.setChromeStorage('sync', key, value);
+        return this.setBrowserStorage('sync', key, value);
     }
 
     async syncGet<T>(key: string): Promise<T | undefined> {
-        return this.getChromeStorage('sync', key);
+        return this.getBrowserStorage('sync', key);
     }
 
-    private getChromeStorage(type: 'local' | 'sync', key: string): Promise<any> {
+    private getBrowserStorage(type: 'local' | 'sync', key: string): Promise<any> {
         return new Promise(resolve =>
             chrome.storage[type].get([key], result =>
                 resolve(
@@ -25,7 +25,7 @@ export class StorageManager {
         );
     }
 
-    private setChromeStorage(type: 'local' | 'sync', key: string, value: any): Promise<void> {
+    private setBrowserStorage(type: 'local' | 'sync', key: string, value: any): Promise<void> {
         return new Promise(resolve =>
             chrome.storage[type].set({[key]: value}, () => resolve())
         );
